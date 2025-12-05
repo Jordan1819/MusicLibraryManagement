@@ -1,11 +1,14 @@
 import sqlite3
+import os
 from typing import List
 
 # MusicDatabase module - provides CRUD & Report methods for all entities in
 # the database - designed to be imported into a manager/orchestrator
 class MusicDatabase:
     def __init__(self, db_name: str = "music.db"):
-        self.db_name = db_name
+        # Always store the DB in the same folder as this file
+        # Prevents any issues running application with VsCode shortcuts
+        self.db_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), db_name)
         self.connection = None
 
     # ===== DB Initialization & Connection Methods ======
