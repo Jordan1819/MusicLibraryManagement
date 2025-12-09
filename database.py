@@ -155,9 +155,23 @@ class MusicDatabase:
         return cursor.lastrowid
     
     def get_all_songs(self):
-        # Retrieve all songs
+        # Retrieve all songs - join all tables for pulling related song data
         cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM Song ORDER BY Title")
+        cursor.execute("""
+            SELECT DISTINCT s.SongID, s.Title,
+                   GROUP_CONCAT(DISTINCT a.Name) as Artists,
+                   GROUP_CONCAT(DISTINCT al.Title) as Albums,
+                   GROUP_CONCAT(DISTINCT c.CategoryName) as Categories
+            FROM Song s
+            LEFT JOIN Plays p ON s.SongID = p.SongID
+            LEFT JOIN Artist a ON p.ArtistID = a.ArtistID
+            LEFT JOIN IsOn io ON s.SongID = io.SongID
+            LEFT JOIN Album al ON io.AlbumID = al.AlbumID
+            LEFT JOIN IsIn ii ON s.SongID = ii.SongID
+            LEFT JOIN Category c ON ii.CategoryID = c.CategoryID
+            GROUP BY s.SongID
+            ORDER BY s.Title
+        """)
         return cursor.fetchall()
     
     def get_song_by_name(self, title: str):
@@ -269,7 +283,7 @@ class MusicDatabase:
             SELECT s.Title AS Title, a.Name AS ArtistName 
             FROM Song s
             JOIN Plays p ON s.SongID = p.SongID
-            JOIN Artist a ON p.ArtistID = a.ArtisdID
+            JOIN Artist a ON p.ArtistID = a.ArtistID
             WHERE a.Name = ?
             ORDER BY a.Name       
          """, (name,))
@@ -279,7 +293,7 @@ class MusicDatabase:
         # Retrieve all artist names w/ albums in input year
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT a.Name AS Artist
+            SELECT DISTINCT a.Name AS Artist
             FROM Artist a
             JOIN Plays p ON a.ArtistID = p.ArtistID
             JOIN Song s ON p.SongID = s.SongID

@@ -38,6 +38,7 @@ class MusicManager:
                 print("Please enter an integer.")
 
     # Display lists dynamically & allows the user to select a list item
+    # For creating songs & linking them to other entities
     def selectable_list(self, items: list, display_field: str, id_field: str, item_type: str):
         if not items:
             print(f"\nNo {item_type}s available")
@@ -50,7 +51,7 @@ class MusicManager:
 
         # Loop until user selects a valid option
         while True:
-            choice = input(f"\nSelect {item_type}s (1-{len(items)} or 0 to skip: )").strip()
+            choice = input(f"\nSelect {item_type} (1-{len(items)} or 0 to skip: )").strip()
             if choice == '0':
                 return None
             try:
@@ -66,6 +67,39 @@ class MusicManager:
     # Pause execution & wait for input
     def pause(self):
         input("\nPress Enter to Continue")
+
+    # Display instructions for using the application
+    def display_instructions(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("Instructions for Use")
+        print("=" * 50)
+
+        print("""
+        This application is designed to mimic a music library.
+        ***Before you add a song, you must add it's artists, albums, and categories in their respective menus.***
+        Adding a song is where all of those fields can be connected, as song entities are at the center of the db architecture.
+        
+        Each entity has full CRUD implementation in it's respective menu.
+        
+        Example User Flow:
+        - From the main menu, select 'Manage Artists'
+        - From the artist menu, select 'Create Artist'
+        - Enter artist name: 'Michael Jackson'
+            
+        - Navigate back to main menu, and select 'Manage Categories'
+        - 'Create Category' - 'Pop'
+        - Navigate back to main menu
+
+        - Select 'Manage Albums'
+        - Select 'Create Album'
+        - Input the album's title and year: 'Thriller, 1982'
+            
+        - Back to main menu, select 'Manage Songs'
+        - Select 'Create Song' and follow the prompt to add song title, artist, album, and category.
+        - Each song entity can have multiple artists, categories, and albums connected to it.
+        """)
+        self.pause()
 
     # =================== Artist Management ====================
     
@@ -358,10 +392,260 @@ class MusicManager:
             print("Error deleting album.")
         self.pause()
 
+    
+    # ================ Song Management =========================
+
+    # Display the song management menu
+    def display_song_menu(self):
+        while True:
+            self.clear_screen()
+            print("=" * 50)
+            print("Manage Songs")
+            print("=" * 50)
+            print("1. Create Song")
+            print("2. View All Songs")
+            print("3. Update Song")
+            print("4. Delete Song")
+            print("5. Manage Song Relationships")
+            print("6. Back to Main Menu")
+
+            choice = self.get_input("\nChoose an option:")
+
+            if choice == '1':
+                self.create_song()
+            elif choice == '2':
+                self.display_all_songs()
+            elif choice == '3':
+                self.update_song()
+            elif choice == '4':
+                self.delete_song()
+            elif choice == '5':
+                self.manage_song_relationships()
+            elif choice== '6':
+                break
+            else:
+                print("\nPlease enter a valid option.")
+                self.pause()
+    
+    # Create a new song entry & tie it to artist/album/category
+    def create_song(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("Create a New Song")
+        print("=" * 50)
+
+        title = self.get_input("Song Title:")
+
+        try:
+            song_id = self.db.create_song(title)
+            print(f"Song: '{title}' created successfully!")
+
+            # Add artist/artists
+            print("\n--- Add Song Artist/Artists ---")
+            artists = self.db.get_all_artists()
+            if artists:
+                while True:
+                    # Get artist IDs
+                    artist_id = self.selectable_list(artists, 'Name', 'ArtistID', 'Artist')
+                    if artist_id:
+                        # Add artist to song
+                        self.db.add_artist_to_song(song_id, artist_id)
+                        print("Artist added!")
+
+                        additional_artist = input("Add another artist? (Y/N):").strip().lower()
+                        if additional_artist != 'y':
+                            break
+                    else:
+                        break
+            else:
+                print("No artists in library. Add artists first!")
+            
+            # Add song to an album/albums
+            print("\n--- Add Song to Album/Albums ---")
+            albums = self.db.get_all_albums()
+            if albums:
+                while True:
+                    # Get album IDs
+                    album_id = self.selectable_list(albums, 'Title', 'AlbumID', 'Album')
+                    if album_id:
+                        self.db.add_song_to_album(song_id, album_id)
+                        print("Added to album!")
+
+                        additional_album = input("Add song to another album? (Y/N):").strip().lower()
+                        if additional_album != 'y':
+                            break
+                    else:
+                        break
+            else:
+                print("No albums in library. Add albums first!")
+            
+            # Add song to category
+            print("\n--- Add Category/Categories to Song ---")
+            categories = self.db.get_all_categories()
+            if categories:
+                while True:
+                    category_id = self.selectable_list(categories, 'CategoryName', 'CategoryID', 'Category')
+                    if category_id:
+                        self.db.add_category_to_song(song_id, category_id)
+                        print("Category added!")
+
+                        additional_category = input("Add additional categories to song? (Y/N):").strip().lower()
+                        if additional_category != 'y':
+                            break
+                    else:
+                        break
+            else:
+                print("No categories in library. Add categories first!")
+            print("\n")
+            print("=" * 50)
+            print(f"{title} fully created!")
+            print("=" * 50)
+
+        except Exception as e:
+            print("Error creating song: {e}")
+        self.pause()
+    
+    # Display all songs and pull their respective artist, album, and category
+    def display_all_songs(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("All Songs")
+        print("=" * 50)
+
+        songs = self.db.get_all_songs()
+
+        if not songs:
+            print("No songs in your library.")
+        else:
+            for song in songs:
+                print(f"Title: {song['Title']}")
+                print(f"Artist: {song['Artists'] if song['Artists'] else 'None'}")
+                print(f"Album: {song['Albums'] if song['Albums'] else 'None'}")
+                print(f"Category: {song['Categories'] if song['Categories'] else 'None'}")
+                print("-" * 50)
+        self.pause()
+
+    # Update a song's title
+    def update_song(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("Update a Song Title")
+        print("=" * 50)
+
+        old_title = self.get_input("Enter the title of the song to update:")
+        new_title = self.get_input("Enter the new title of this song:")
+
+        if self.db.update_song_by_name(old_title, new_title):
+            print("Song updated successfully.")
+        else:
+            print("Error updating song.")
+        self.pause()
+
+    # Delete a song
+    def delete_song(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("Delete a Song")
+        print("=" * 50)
+
+        title = self.get_input("Enter the title of the song to delete:")
+
+        if self.db.delete_song_by_name(title):
+            print(f"{title} deleted from song library.")
+        else:
+            print("Error deleting song.")
+        self.pause()
+
+    
+    # ===================== Report Generation ===================
 
 
+    # Display report menu
+    def display_report_menu(self):
+        while True:
+            self.clear_screen()
+            print("=" * 50)
+            print("Generate Reports")
+            print("=" * 50)
+            print("1. See all songs played by an artist.")
+            print("2. Look up all artists with albums in a given year.")
+            print("3. Find all albums with songs in a given category.")
+            print("4. Back to Main Menu")
+
+            choice = self.get_input("\nChoose an option:")
+
+            if choice == '1':
+                self.see_all_songs_played_by_artist()
+            elif choice == '2':
+                self.see_all_artists_with_albums_in_year()
+            elif choice == '3':
+                self.see_all_albums_in_category()
+            elif choice == '4':
+                break
+            else:
+                print("\nPlease enter a valid option.")
+                self.pause()
+
+    # Show all songs played by an artist
+    def see_all_songs_played_by_artist(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("See All Songs By Given Artist")
+        print("=" * 50)
+
+        artist_name = self.get_input("Enter the name of the artist:")
+        songs = self.db.see_all_songs_played_by_artist(artist_name)
+
+        if not songs:
+            print("No songs for given artist.")
+        else:
+            print("-" * 50)
+            for song in songs:
+                print(f"{song['Title']} by {song['ArtistName']}")
+                print("-" * 50)
+        self.pause()
+
+    # Show all artists with albums in a given year
+    def see_all_artists_with_albums_in_year(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("See All Artists w/ Songs in a Given Year")
+        print("=" * 50)
+
+        year = self.get_input("Enter the year you'd like to see artists w/ albums from:")
+        artists = self.db.see_all_artists_with_albums_in_year(year)
+
+        if not artists:
+            print("No artists w/ albums in the given year.")
+        else:
+            print("-" * 50)
+            for artist in artists:
+                print(f"Artist: {artist['Artist']}")
+                print("-" * 50)
+        self.pause()
+        
+    # Show all albums w/ songs in given category
+    def see_all_albums_in_category(self):
+        self.clear_screen()
+        print("=" * 50)
+        print("See All Albums w/ Songs in a Given Category")
+        print("=" * 50)
+
+        category = self.get_input("Enter your desired category:")
+        albums = self.db.see_all_albums_in_category(category)
+
+        if not category:
+            print("No albums with songs in that category.")
+        else:
+            print("-" * 50)
+            for album in albums:
+                print(f"{album['AlbumTitle']} by {album['ArtistName']}")
+                print("-" * 50)
+        self.pause()
+        
 
     # ===================== Main Menu ===========================
+
 
     # Display the main menu where users can select 
     def main_menu(self):
@@ -370,6 +654,7 @@ class MusicManager:
             print("=" * 50)
             print("=== Manage Your Music Library ===")
             print("=" * 50)
+            print("0. View Instructions")
             print("1. Manage Artists")
             print("2. Manage Categories")
             print("3. Manage Albums")
@@ -379,6 +664,8 @@ class MusicManager:
 
             choice = self.get_input("\nChoose an option:")
 
+            if choice == '0':
+                self.display_instructions()
             if choice == '1':
                 self.display_artist_menu()
             elif choice == '2':
@@ -388,7 +675,7 @@ class MusicManager:
             elif choice == '4':
                 self.display_song_menu()
             elif choice == '5':
-                self.generate_reports()
+                self.display_report_menu()
             elif choice == '6':
                 break
             else:
