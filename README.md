@@ -2,6 +2,14 @@
 
 A terminal-based application for managing a music collection with support for Artists, Albums, Songs, and Categories.
 
+## Application Contents
+
+The project includes:
+1. ✅ `music_manager.py` - The entry point and source code for this application
+2. ✅ `schema.sql` - SQL statements to create the database
+3. ✅ `database.py` - A database management module where SQLite methods are implemented
+4. ✅ `README.md` - Instructions for running the program and info about the project
+
 ## Requirements
 
 - Python 3.6 or higher
@@ -115,14 +123,6 @@ The application implements the following ER diagram:
 4. Create songs and link them:
    - "Come Together" → Artist: The Beatles, Album: Abbey Road, Category: Rock
    - "Bohemian Rhapsody" → Artist: Queen, Album: A Night at the Opera, Category: Rock
-
-## Application Contents
-
-The project includes:
-1. ✅ `music_manager.py` - The entry point and source code for this application
-2. ✅ `schema.sql` - SQL statements to create the database
-3. ✅ `database.py` - A database management module where SQLite methods are implemented
-4. ✅ `README.md` - Instructions for running the program and info about the project
 
 ## License
 
