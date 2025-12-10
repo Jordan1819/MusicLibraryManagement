@@ -5,9 +5,9 @@ A terminal-based application for managing a music collection with support for Ar
 ## Application Contents
 
 The project includes:
-1. ✅ `music_manager.py` - The entry point and source code for this application
+1. ✅ `music_manager.py` - The entry point and source code orchestrator for this application
 2. ✅ `schema.sql` - SQL statements to create the database
-3. ✅ `database.py` - A database management module where SQLite methods are implemented
+3. ✅ `database.py` - A custom database management module where SQLite methods are implemented - imported in music_manager.py
 4. ✅ `README.md` - Instructions for running the program and info about the project
 
 ## Requirements

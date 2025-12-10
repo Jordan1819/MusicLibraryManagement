@@ -76,7 +76,7 @@ class MusicManager:
         print("=" * 50)
 
         print("""
-        This application is designed to mimic a music library.
+        This application allows users to create and customize a music library.
         ***Before you add a song, you must add it's artists, albums, and categories in their respective menus.***
         Adding a song is where all of those fields can be connected, as song entities are at the center of the db architecture.
         
