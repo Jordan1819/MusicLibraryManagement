@@ -35,7 +35,7 @@ music_manager/
 
 ### First Time Setup
 When you run the program for the first time, it will automatically:
-1. Create the `music.db` SQLite database file
+1. Create the `music.db` SQLite database if it doesn't already exist
 2. Create all necessary tables according to the schema
 3. Display the main menu
 
