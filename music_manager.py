@@ -407,8 +407,7 @@ class MusicManager:
             print("2. View All Songs")
             print("3. Update Song")
             print("4. Delete Song")
-            print("5. Manage Song Relationships")
-            print("6. Back to Main Menu")
+            print("5. Back to Main Menu")
 
             choice = self.get_input("\nChoose an option:")
 
@@ -421,8 +420,6 @@ class MusicManager:
             elif choice == '4':
                 self.delete_song()
             elif choice == '5':
-                self.manage_song_relationships()
-            elif choice== '6':
                 break
             else:
                 print("\nPlease enter a valid option.")
