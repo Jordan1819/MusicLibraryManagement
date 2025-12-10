@@ -76,30 +76,31 @@ class MusicManager:
         print("=" * 50)
 
         print("""
-        This application allows users to create and customize a music library.
-        ***Before you add a song, you must add it's artists, albums, and categories in their respective menus.***
-        Adding a song is where all of those fields can be connected, as song entities are at the center of the db architecture.
-        
-        Each entity has full CRUD implementation in it's respective menu.
-        
-        Example User Flow:
-        - From the main menu, select 'Manage Artists'
-        - From the artist menu, select 'Create Artist'
-        - Enter artist name: 'Michael Jackson'
+            This application allows users to create and customize a music library.
+            ***Before you add a song, you must add it's artists, albums, and categories in their respective menus.***
+            Adding a song is where all of those fields can be connected, song entities are at the center of the db architecture.
             
-        - Navigate back to main menu, and select 'Manage Categories'
-        - 'Create Category' - 'Pop'
-        - Navigate back to main menu
+            Each entity has full CRUD implementation in it's respective menu.
+            
+            Example User Flow:
+            - From the main menu, select 'Manage Artists'
+            - From the artist menu, select 'Create Artist'
+            - Enter artist name: 'Michael Jackson'
+                
+            - Navigate back to main menu, and select 'Manage Categories'
+            - 'Create Category' - 'Pop'
+            - Navigate back to main menu
 
-        - Select 'Manage Albums'
-        - Select 'Create Album'
-        - Input the album's title and year: 'Thriller, 1982'
-            
-        - Back to main menu, select 'Manage Songs'
-        - Select 'Create Song' and follow the prompt to add song title, artist, album, and category.
-        - Each song entity can have multiple artists, categories, and albums connected to it.
+            - Select 'Manage Albums'
+            - Select 'Create Album'
+            - Input the album's title and year: 'Thriller, 1982'
+                
+            - Back to main menu, select 'Manage Songs'
+            - Select 'Create Song' and follow the prompt to add song title, artist, album, and category.
+            - Each song entity can have multiple artists, categories, and albums connected to it.
         """)
-        self.pause()
+
+        input("\nPress enter when finished reading...")
 
     # =================== Artist Management ====================
     
